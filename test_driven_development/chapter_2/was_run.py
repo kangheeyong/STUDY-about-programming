@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+from typing import List
+
+
 class TestCase:
     def __init__(self, name: str):
         self.name = name
@@ -8,8 +13,7 @@ class TestCase:
     def tearDown(self):
         pass
 
-    def run(self):
-        result = TestResult()
+    def run(self, result: TestResult):
         result.testStarted()
         self.setUp()
         try:
@@ -34,6 +38,19 @@ class TestResult:
 
     def summary(self):
         return f"{self.runCount} run, {self.failureCount} failed"
+
+
+class TestSuite:
+    def __init__(self):
+        self.tests: List[WasRun] = []
+
+    def add(self, test: WasRun):
+        self.tests.append(test)
+
+    def run(self, result: TestResult):
+        for test in self.tests:
+            test.run(result)
+        return result
 
 
 class WasRun(TestCase):
