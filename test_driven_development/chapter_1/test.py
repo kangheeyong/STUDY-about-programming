@@ -37,7 +37,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(five, _sum.addend)
 
     def test_reduce_sum(self):
-        _sum = Sum(Money.franc(5), Money.franc(2))
+        _sum = Sum(Money.dollar(5), Money.dollar(2))
         bank = Bank()
         reduced = bank.reduced(_sum, Currency.USD)
         self.assertEqual(Money.dollar(7), reduced)
@@ -55,6 +55,34 @@ class TestCase(unittest.TestCase):
 
     def test_identity_rate(self):
         self.assertEqual(1, Bank().rate(Currency.USD, Currency.USD))
+
+    def test_mixed_addition(self):
+        fiveBucks = Money.dollar(5)
+        tenFrancs = Money.franc(10)
+        bank = Bank()
+        bank.addRate(Currency.CHF, Currency.USD, 2)
+        result = bank.reduced(fiveBucks.plus(tenFrancs), Currency.USD)
+        self.assertEqual(Money.dollar(10), result)
+
+    def test_sum_plus_money(self):
+        fiveBucks = Money.dollar(5)
+        tenFrancs = Money.franc(10)
+        bank = Bank()
+        bank.addRate(Currency.CHF, Currency.USD, 2)
+        _sum = Sum(fiveBucks, tenFrancs).plus(fiveBucks)
+        _sum = _sum.plus(fiveBucks)
+        _sum = _sum.plus(fiveBucks)
+        result = bank.reduced(_sum, Currency.USD)
+        self.assertEqual(Money.dollar(25), result)
+
+    def test_sum_times(self):
+        fiveBucks = Money.dollar(5)
+        tenFrancs = Money.franc(10)
+        bank = Bank()
+        bank.addRate(Currency.CHF, Currency.USD, 2)
+        _sum = Sum(fiveBucks, tenFrancs).times(2)
+        result = bank.reduced(_sum, Currency.USD)
+        self.assertEqual(Money.dollar(20), result)
 
 
 if __name__ == "__main__":

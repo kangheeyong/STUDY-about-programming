@@ -36,11 +36,20 @@ class Money:
 
 @dataclass
 class Sum:
-    augend: Money
-    addend: Money
+    augend: Union[Sum, Money]
+    addend: Union[Sum, Money]
+
+    def plus(self, added: Money) -> Sum:
+        return Sum(self, added)
+
+    def times(self, multiplier: int) -> Union[Sum, Money]:
+        return Sum(self.augend.times(multiplier), self.addend.times(multiplier))
 
     def reduced(self, bank: Bank, currency: Currency) -> Money:
-        amount = self.augend.amount + self.addend.amount
+        amount = (
+            self.augend.reduced(bank, currency).amount
+            + self.addend.reduced(bank, currency).amount
+        )
         return Money(amount, currency)
 
 
