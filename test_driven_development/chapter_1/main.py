@@ -12,30 +12,23 @@ class Money:
         if not isinstance(obj, Money):
             raise TypeError()
 
-        is_same_class = self.__class__ == obj.__class__
+        is_same_currency = self._currency == obj._currency
         is_same_amount = self._amount == obj._amount
-        return is_same_amount and is_same_class
+        return is_same_amount and is_same_currency
+
+    def __str__(self):
+        return f"amount: {self._amount}, currency: {self._currency}"
 
     def times(self, multiplier: int) -> Money:
-        raise NotImplementedError()
+        return Money(self._amount * multiplier, self.currency())
 
     def currency(self) -> str:
         return self._currency
 
     @staticmethod
-    def dollar(amount: int) -> Dollar:
-        return Dollar(amount, "USD")
+    def dollar(amount: int) -> Money:
+        return Money(amount, "USD")
 
     @staticmethod
-    def franc(amount: int) -> Franc:
-        return Franc(amount, "CHF")
-
-
-class Dollar(Money):
-    def times(self, multiplier: int) -> Dollar:
-        return Money.dollar(self._amount * multiplier)
-
-
-class Franc(Money):
-    def times(self, multiplier: int) -> Franc:
-        return Money.franc(self._amount * multiplier)
+    def franc(amount: int) -> Money:
+        return Money(amount, "CHF")
